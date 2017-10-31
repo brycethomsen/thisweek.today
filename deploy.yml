@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'thisweek.today main site'
+Parameters:
+  S3BucketName:
+    Type: String
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      BucketName: !Ref S3BucketName
+    DeletionPolicy: Retain
+  BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref "S3Bucket"
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource: "arn:aws:s3:::thisweek.today/*"
+              # Fn::Join:
+              #   - ""
+              #   -
+              #     - "arn:aws:s3:::"
+              #     -
+              #       Ref: "S3Bucket"
+              #     - "/*"
+            Principal: "*"
+            # Condition:
+            #   StringLike:
+            #     aws:Referer:
+            #       - "http://www.thisweek.today/*"
+            #       - "http://thisweek.today/*"
